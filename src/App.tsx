@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import "./scss/style.scss"
 import InputFile from "./components/InputFile";
+import SprintSelector from "./components/SprintSelector";
 import AddFiles from "./ui/AddFiles";
 import Header from "./ui/Header";
 
@@ -14,6 +15,8 @@ function App() {
     <>
       <Header />
       <AddFiles onClick={handleRunClick} isRun={isRun} />
+
+      <SprintSelector items={["test1", "test2"]} />
     </>
   )
 }
