@@ -1,0 +1,13 @@
+.button {
+	min-width: 237px;
+	font-size: 18px;
+	font-weight: 500;
+	padding: 10px;
+	border-radius: 10px;
+	border: 1px solid #BBBBBB;
+	background-color: #fafafa;
+	transition: background-color .2s ease-in-out;
+	&:hover {
+		background-color: darken(#fafafa, 7%);
+	}
+}

@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import styles from "./AddFiles.module.scss"
 import InputFile from "../../components/InputFile";
 import {Paths} from "../../interfaces/paths.ts";
+import Button from "../../components/Button";
 
 interface Props {
 	onClick: () => void;
@@ -26,7 +27,7 @@ const AddFiles: React.FC<Props> = ({onClick, isRun, onChangePaths}) => {
 		<section className={styles.add_files}>
 			<div className="container">
 				<div className={styles.add_files__inner + " " + (isRun ? styles.hide : "")}>
-					<div className={styles.add_files__title}>Загрузите 3 csv файла</div>
+					<h3 className="title">Загрузите 3 csv файла</h3>
 					<div className={styles.add_files__block}>
 						<InputFile title={"файл спринтов (sprints)"} id="sprints" onChangePaths={handleSprint}/>
 						<InputFile title={"файл задач (enitities)"} id="entities" onChangePaths={handleEntities}/>
@@ -34,7 +35,7 @@ const AddFiles: React.FC<Props> = ({onClick, isRun, onChangePaths}) => {
 					</div>
 				</div>
 				<div className={styles.add_files__center}>
-					<button onClick={() => {
+					<Button onClick={() => {
 						onClick();
 						if (!isRun) {
 							onChangePaths({
@@ -43,7 +44,7 @@ const AddFiles: React.FC<Props> = ({onClick, isRun, onChangePaths}) => {
 								history: historyPath
 							})
 						}
-					}} className={styles.add_files__btn}>{isRun ? "Изменить": "Запустить"}</button>
+					}} text={isRun ? "Изменить": "Запустить"}></Button>
 				</div>
 			</div>
 		</section>
