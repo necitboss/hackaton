@@ -1,0 +1,33 @@
+.input_file {
+	padding: 10px 21px 15px 22px;
+	border: 1px solid #BBBBBB;
+	border-radius: 10px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.input_file__title {
+	font-size: 18px;
+	margin-bottom: 14px;
+}
+
+.input_file__input {
+	display: none;
+}
+
+.input_file__label {
+	width: 237px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	padding: 10px 10px;
+	text-align: center;
+	border: 1px solid #BBBBBB;
+	border-radius: 10px;
+	background-color: #fafafa;
+	transition: background-color .2s ease-in-out;
+	&:hover {
+		background-color: darken(#fafafa, 7%);
+	}
+}
