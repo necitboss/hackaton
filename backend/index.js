@@ -64,7 +64,7 @@ function parse(csvFilePath) {
 }
 const sprintName = '2024.3.5.NPP Shared Sprint'; // Пример имени для запроса
 // Пример использования функции
-const entity = parse('entity.csv');
+const entitys = parse('entitys.csv');
 //const history = parse('history.csv')
 const sprints = parse('sprints.csv');
 const sqlSprintsNames = (0, alasql_1.default)(`SELECT sprint_name FROM ?`, [sprints]); // Получение всех спринтов
@@ -90,11 +90,11 @@ for (let i = 0; i < ((_c = sqlEntityIdsForSprintName[0]) === null || _c === void
     update = false;
     const item = (_d = sqlEntityIdsForSprintName[0]) === null || _d === void 0 ? void 0 : _d.entity_ids;
     console.log("biba: " + item[i]);
-    const sqlExecuted = (0, alasql_1.default)(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND status = 'Создано'`, [entity]);
-    const sqlDone = (0, alasql_1.default)(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND (status = 'Закрыто' OR status = 'Выполнено')`, [entity]);
-    const sqlRemove = (0, alasql_1.default)(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND ((status = 'Закрыто' OR status = 'Выполнено') AND (resolution = 'Отклонено' OR resolution = 'Отменено инициатором' OR resolution = 'Дубликат') OR (status = 'Отклонен исполнителем' AND type = 'Дефект'))`, [entity]);
-    const sqlBacklog = (0, alasql_1.default)(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND type != 'Дефект' AND update_date < '${sqlSprintStartDate2}'`, [entity]);
-    const sqlBacklog2 = (0, alasql_1.default)(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND type != 'Дефект' AND update_date > '${sqlSprintStartDate}' AND update_date < '${sqlSprintStartDate2}'`, [entity]);
+    const sqlExecuted = (0, alasql_1.default)(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND status = 'Создано'`, [entitys]);
+    const sqlDone = (0, alasql_1.default)(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND (status = 'Закрыто' OR status = 'Выполнено')`, [entitys]);
+    const sqlRemove = (0, alasql_1.default)(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND ((status = 'Закрыто' OR status = 'Выполнено') AND (resolution = 'Отклонено' OR resolution = 'Отменено инициатором' OR resolution = 'Дубликат') OR (status = 'Отклонен исполнителем' AND type = 'Дефект'))`, [entitys]);
+    const sqlBacklog = (0, alasql_1.default)(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND type != 'Дефект' AND update_date < '${sqlSprintStartDate2}'`, [entitys]);
+    const sqlBacklog2 = (0, alasql_1.default)(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND type != 'Дефект' AND update_date > '${sqlSprintStartDate}' AND update_date < '${sqlSprintStartDate2}'`, [entitys]);
     if (!isNaN(Number((_e = sqlExecuted[0]) === null || _e === void 0 ? void 0 : _e.estimation))) {
         executed += Number((_f = sqlExecuted[0]) === null || _f === void 0 ? void 0 : _f.estimation);
         update = true;
