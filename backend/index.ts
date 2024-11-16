@@ -68,7 +68,7 @@ function parse(csvFilePath: string): any[] {
 const sprintName = '2024.3.5.NPP Shared Sprint'; // Пример имени для запроса
 
 // Пример использования функции
-const entity = parse('entity.csv');
+const entitys = parse('entitys.csv');
 //const history = parse('history.csv')
 const sprints = parse('sprints.csv');
 
@@ -103,11 +103,11 @@ let update = false;
 for (let i = 0; i < sqlEntityIdsForSprintName[0]?.entity_ids.length; i++){
     update = false;
 
-    const sqlExecuted = alasql(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND status = 'Создано'`, [entity]);
-    const sqlDone = alasql(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND (status = 'Закрыто' OR status = 'Выполнено')`, [entity]);
-    const sqlRemove = alasql(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND ((status = 'Закрыто' OR status = 'Выполнено') AND (resolution = 'Отклонено' OR resolution = 'Отменено инициатором' OR resolution = 'Дубликат') OR (status = 'Отклонен исполнителем' AND type = 'Дефект'))`, [entity]);
-    const sqlBacklog = alasql(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND type != 'Дефект' AND update_date < '${sqlSprintStartDate2}'`, [entity]);
-    const sqlBacklog2 = alasql(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND type != 'Дефект' AND update_date > '${sqlSprintStartDate}' AND update_date < '${sqlSprintStartDate2}'`, [entity]);
+    const sqlExecuted = alasql(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND status = 'Создано'`, [entitys]);
+    const sqlDone = alasql(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND (status = 'Закрыто' OR status = 'Выполнено')`, [entitys]);
+    const sqlRemove = alasql(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND ((status = 'Закрыто' OR status = 'Выполнено') AND (resolution = 'Отклонено' OR resolution = 'Отменено инициатором' OR resolution = 'Дубликат') OR (status = 'Отклонен исполнителем' AND type = 'Дефект'))`, [entitys]);
+    const sqlBacklog = alasql(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND type != 'Дефект' AND update_date < '${sqlSprintStartDate2}'`, [entitys]);
+    const sqlBacklog2 = alasql(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND type != 'Дефект' AND update_date > '${sqlSprintStartDate}' AND update_date < '${sqlSprintStartDate2}'`, [entitys]);
 
     if (!isNaN(Number(sqlExecuted[0]?.estimation))){
         executed += Number(sqlExecuted[0]?.estimation);
@@ -125,7 +125,7 @@ for (let i = 0; i < sqlEntityIdsForSprintName[0]?.entity_ids.length; i++){
     }
 
     if (!update){
-        let sqlWork = alasql(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}'`, [entity]);
+        let sqlWork = alasql(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}'`, [entitys]);
         if (!isNaN(Number(sqlWork[0]?.estimation))){
             work += Number(sqlWork[0]?.estimation);
         }
