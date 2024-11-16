@@ -5,7 +5,9 @@ const Header = () => {
 	return (
 		<header className={styles.header}>
 			<div className="container">
-				<h1 className={styles.header__title}>Sprint-калькулятор</h1>
+				<div className={styles.header__inner}>
+					<h1 className={styles.header__title}>Sprint-калькулятор</h1>
+				</div>
 			</div>
 		</header>
 	);

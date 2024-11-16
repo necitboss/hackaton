@@ -2,6 +2,15 @@
 	border-bottom: 1px solid #D8D8D8;
 }
 
+.header__inner {
+	display: flex;
+	justify-content: space-between;
+	height: 70px;
+	align-items: center;
+}
+
 .header__title {
+	font-size: 28px;
+	font-weight: 500;
 
 }
