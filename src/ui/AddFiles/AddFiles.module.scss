@@ -13,14 +13,6 @@
 	max-height: 0;
 }
 
-
-.add_files__title {
-	text-align: center;
-	font-size: 24px;
-	font-weight: 500;
-	margin-bottom: 35px;
-}
-
 .add_files__block {
 	display: flex;
 	justify-content: space-around;
@@ -30,18 +22,4 @@
 .add_files__center {
 	display: flex;
 	justify-content: center;
-}
-
-.add_files__btn {
-	min-width: 237px;
-	font-size: 18px;
-	font-weight: 500;
-	padding: 10px;
-	border-radius: 10px;
-	border: 1px solid #BBBBBB;
-	background-color: #fafafa;
-	transition: background-color .2s ease-in-out;
-	&:hover {
-		background-color: darken(#fafafa, 7%);
-	}
 }
