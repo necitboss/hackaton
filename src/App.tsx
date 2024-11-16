@@ -5,7 +5,7 @@ import AddFiles from "./ui/AddFiles";
 import Header from "./ui/Header";
 
 function App() {
-  const [isRun, setRun] = useState(true);
+  const [isRun, setRun] = useState(false);
   const handleRunClick = () => {
     setRun(prevState => !prevState);
     // Добавить дальше логику в глобальной части приложения (в том числе, проверку и прочее)
