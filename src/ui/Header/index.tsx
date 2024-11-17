@@ -6,7 +6,7 @@ const Header = () => {
 		<header className={styles.header}>
 			<div className="container">
 				<div className={styles.header__inner}>
-					<h1 className={styles.header__title}>Sprint-калькулятор</h1>
+					<h1 className={styles.header__title}>Pulse</h1>
 				</div>
 			</div>
 		</header>
