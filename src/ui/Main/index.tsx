@@ -12,8 +12,6 @@ interface Props {
   sprintLength: number;
 }
 
-
-
 const Main: React.FC<Props> = ({names, onGetChecked, statuses, onAnalyzeClick, sprintLength}) => {
   const [rangeValue, setRangeValue] = useState(sprintLength);
   const [checkboxes, setCheckboxes] = useState<CheckboxOption[]>(names.map(name => {
@@ -91,10 +89,8 @@ const Main: React.FC<Props> = ({names, onGetChecked, statuses, onAnalyzeClick, s
             })}
           </div>
         </div>
-
       </div>
     </section>
-
   );
 };
 
