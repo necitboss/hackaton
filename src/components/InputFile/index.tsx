@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {ChangeEvent, useRef, useState} from 'react';
 import styles from "./InputFile.module.scss";
 import {Paths} from "../../interfaces/paths.ts";
 
@@ -6,21 +6,21 @@ interface Props {
 	title: string;
 	// state: React.Dispatch<React.SetStateAction<string>>;
 	id: string;
-	onChangePaths: (path: string) => void;
+	onChangePaths: (path: FileList | null) => void;
 }
 
 const InputFile: React.FC<Props> = ({title, id, onChangePaths}) => {
 	const chooseFile = "Выберите .csv файл";
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
 	const [fileName, setFileName] = useState<string>(chooseFile)
-	const handleFileChange = () => {
-		const file = fileInputRef.current?.files?.[0];
+	const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+		const file = fileInputRef.current?.files;
 		if (file) {
-			setFileName(file.name);
-			onChangePaths(file.name);
+			setFileName(file[0].name);
+			onChangePaths(file);
 		}else {
 			setFileName(chooseFile);
-			onChangePaths("");
+			onChangePaths(null);
 		}
 	}
 	return (

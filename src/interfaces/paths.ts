@@ -1,5 +1,5 @@
 export interface Paths {
-	sprints: string;
-	entities: string;
-	history: string;
+	sprints: FileList | null;
+	entities: FileList | null;
+	history: FileList | null;
 }

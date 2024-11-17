@@ -11,16 +11,16 @@ interface Props {
 }
 
 const AddFiles: React.FC<Props> = ({onClick, isRun, onChangePaths}) => {
-	const [sprintPath, setSprintPath] = useState("");
-	const [entitiesPath, setEntitiesPath] = useState("");
-	const [historyPath, setHistoryPath] = useState("");
-	const handleSprint = (path: string) => {
+	const [sprintPath, setSprintPath] = useState<FileList | null>(null);
+	const [entitiesPath, setEntitiesPath] = useState<FileList | null>(null);
+	const [historyPath, setHistoryPath] = useState<FileList | null>(null);
+	const handleSprint = (path: FileList | null) => {
 		setSprintPath(path);
 	}
-	const handleEntities = (path: string) => {
+	const handleEntities = (path: FileList | null) => {
 		setEntitiesPath(path);
 	}
-	const handleHistory = (path: string) => {
+	const handleHistory = (path: FileList | null) => {
 		setHistoryPath(path);
 	}
 	return (
