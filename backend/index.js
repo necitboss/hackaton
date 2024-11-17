@@ -1,29 +1,9 @@
 "use strict";
-/*import Papa from 'papaparse';
-import fs from 'fs'; // Для работы с файловой системой
-import alasql from 'alasql';
-
-// Функция для парсинга CSV-файла
-function parse(csvFilePath: string): any[] {
-    // Синхронное чтение файла
-    const csvData = fs.readFileSync(csvFilePath, 'utf-8');
-    // Используем Papa.parse для парсинга данных
-    const result = Papa.parse(csvData, {
-        header: true,           // Первая строка будет использована как заголовки
-        skipEmptyLines: true,   // Пропускать пустые строки
-        dynamicTyping: true,    // Преобразование чисел и булевых значений автоматически
-    });
-    // Проверка на наличие ошибок в парсинге
-    if (result.errors.length > 0) {
-        throw new Error(`Ошибка при парсинге CSV: ${result.errors.map(error => error.message).join(', ')}`);
-    }
-    // Возвращаем массив данных, полученный из CSV
-    return result.data;
-}*/
+//import fs from 'fs'; // Для работы с файловой системой
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
+var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t;
 Object.defineProperty(exports, "__esModule", { value: true });
 const papaparse_1 = __importDefault(require("papaparse"));
 const fs_1 = __importDefault(require("fs")); // Для работы с файловой системой
@@ -62,7 +42,7 @@ function parse(csvFilePath) {
     // Возвращаем массив данных, полученный из CSV
     return result.data;
 }
-const sprintName = '2024.3.5.NPP Shared Sprint'; // Пример имени для запроса
+const sprintName = '2024.3.1.NPP Shared Sprint'; // Пример имени для запроса
 // Пример использования функции
 const entitys = parse('entitys.csv');
 //const history = parse('history.csv')
@@ -82,19 +62,33 @@ let remove = 0; // Снято
 let backlog = 0; // Бэклог
 let backlog1 = 0; // Бэклог1
 let backlog2 = 0; // Бэклог2
+let block = 0; // Заблокировано задач в Ч/Д
+let exclude = [];
+let excludeCount = [];
+let adde = [];
+let addeCount = [];
 console.log("Start: " + sqlSprintStartDate); // Дата и Время начала спринта
 console.log("End: " + sqlSprintEndDate); // Дата и Время окончания спринта
 console.log("Start2: " + sqlSprintStartDate2); // Дата и Время начала спринта + 2 дня
+const item = (_c = sqlEntityIdsForSprintName[0]) === null || _c === void 0 ? void 0 : _c.entity_ids;
+let currentDate = new Date(sqlSprintStartDate);
+let endDate = new Date(sqlSprintEndDate);
+while (currentDate <= endDate) {
+    exclude.push(0);
+    excludeCount.push(0);
+    adde.push(0);
+    addeCount.push(0);
+    currentDate.setDate(currentDate.getDate() + 1);
+}
 let update = false;
-for (let i = 0; i < ((_c = sqlEntityIdsForSprintName[0]) === null || _c === void 0 ? void 0 : _c.entity_ids.length); i++) {
+for (let i = 0; i < ((_d = sqlEntityIdsForSprintName[0]) === null || _d === void 0 ? void 0 : _d.entity_ids.length); i++) {
     update = false;
-    const item = (_d = sqlEntityIdsForSprintName[0]) === null || _d === void 0 ? void 0 : _d.entity_ids;
-    console.log("biba: " + item[i]);
     const sqlExecuted = (0, alasql_1.default)(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND status = 'Создано'`, [entitys]);
     const sqlDone = (0, alasql_1.default)(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND (status = 'Закрыто' OR status = 'Выполнено')`, [entitys]);
     const sqlRemove = (0, alasql_1.default)(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND ((status = 'Закрыто' OR status = 'Выполнено') AND (resolution = 'Отклонено' OR resolution = 'Отменено инициатором' OR resolution = 'Дубликат') OR (status = 'Отклонен исполнителем' AND type = 'Дефект'))`, [entitys]);
     const sqlBacklog = (0, alasql_1.default)(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND type != 'Дефект' AND update_date < '${sqlSprintStartDate2}'`, [entitys]);
     const sqlBacklog2 = (0, alasql_1.default)(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND type != 'Дефект' AND update_date > '${sqlSprintStartDate}' AND update_date < '${sqlSprintStartDate2}'`, [entitys]);
+    const sqlParentTicketId = (0, alasql_1.default)(`SELECT parent_ticket_id FROM ? WHERE entity_id = '${item[i]}' AND type = 'Закрыто' AND resolution = 'Готово'`, [entitys]);
     if (!isNaN(Number((_e = sqlExecuted[0]) === null || _e === void 0 ? void 0 : _e.estimation))) {
         executed += Number((_f = sqlExecuted[0]) === null || _f === void 0 ? void 0 : _f.estimation);
         update = true;
@@ -108,7 +102,7 @@ for (let i = 0; i < ((_c = sqlEntityIdsForSprintName[0]) === null || _c === void
         update = true;
     }
     if (!update) {
-        let sqlWork = (0, alasql_1.default)(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}'`, [entity]);
+        let sqlWork = (0, alasql_1.default)(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}'`, [entitys]);
         if (!isNaN(Number((_l = sqlWork[0]) === null || _l === void 0 ? void 0 : _l.estimation))) {
             work += Number((_m = sqlWork[0]) === null || _m === void 0 ? void 0 : _m.estimation);
         }
@@ -118,6 +112,10 @@ for (let i = 0; i < ((_c = sqlEntityIdsForSprintName[0]) === null || _c === void
     }
     if (!isNaN(Number((_q = sqlBacklog2[0]) === null || _q === void 0 ? void 0 : _q.estimation))) {
         backlog2 += Number((_r = sqlBacklog2[0]) === null || _r === void 0 ? void 0 : _r.estimation);
+    }
+    if (!isNaN(Number((_s = sqlParentTicketId[0]) === null || _s === void 0 ? void 0 : _s.parent_ticket_id))) {
+        const sqlBlock = (0, alasql_1.default)(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND type = 'Закрыто' AND resolution = 'Готово'`, [entitys]);
+        block += Number((_t = sqlParentTicketId[0]) === null || _t === void 0 ? void 0 : _t.parent_ticket_id);
     }
 }
 executed = executed / 3600;
@@ -134,6 +132,8 @@ backlog2 = backlog2 / 3600;
 //backlog2 = Math.round(backlog2 * 10) / 10;
 backlog = backlog2 / backlog1 * 100;
 backlog = Math.round(backlog * 10) / 10;
+block = block / 3600;
+block = Math.round(backlog * 10) / 10;
 console.log("К выполнению: " + executed); // Вывод значения показателя "К выполнению"
 console.log("В работе: " + work); // Вывод значения показателя "В работе"
 console.log("Сделано: " + done); // Вывод значения показателя "Сделано"
@@ -141,6 +141,10 @@ console.log("Снято: " + remove); // Вывод значения показ�
 console.log("Бэклог: " + backlog); // Вывод значения "Бэклог"
 console.log("Бэклог1: " + backlog1); // Вывод "значения" "бэклог"
 console.log("Бэклог2: " + backlog2); // Вывод "значения" "бэклог2"
+console.log("Заблокировано задач в Ч/Д: " + block); // Вывод значения Заблокировано задач в Ч/Д
+for (let it = 0; it < adde.length; it++) {
+    console.log("Значение: " + adde[it]);
+}
 //let sql_entity = alasql('SELECT * FROM ? LIMIT 10', [history]);
 //let sql_sprint = alasql(`SELECT * FROM ? WHERE sprint_start_date = 2024-07-03-19:00:00.000000`, [sprints]);
 //console.log(sql_sprint);

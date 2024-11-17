@@ -1,24 +1,5 @@
-/*import Papa from 'papaparse';
-import fs from 'fs'; // Для работы с файловой системой
-import alasql from 'alasql';
 
-// Функция для парсинга CSV-файла
-function parse(csvFilePath: string): any[] {
-    // Синхронное чтение файла
-    const csvData = fs.readFileSync(csvFilePath, 'utf-8');
-    // Используем Papa.parse для парсинга данных
-    const result = Papa.parse(csvData, {
-        header: true,           // Первая строка будет использована как заголовки
-        skipEmptyLines: true,   // Пропускать пустые строки
-        dynamicTyping: true,    // Преобразование чисел и булевых значений автоматически
-    });
-    // Проверка на наличие ошибок в парсинге
-    if (result.errors.length > 0) {
-        throw new Error(`Ошибка при парсинге CSV: ${result.errors.map(error => error.message).join(', ')}`);
-    }
-    // Возвращаем массив данных, полученный из CSV
-    return result.data;
-}*/
+//import fs from 'fs'; // Для работы с файловой системой
 
 import Papa from 'papaparse';
 import fs from 'fs'; // Для работы с файловой системой
@@ -65,7 +46,7 @@ function parse(csvFilePath: string): any[] {
     return result.data;
 }
 
-const sprintName = '2024.3.5.NPP Shared Sprint'; // Пример имени для запроса
+const sprintName = '2024.3.1.NPP Shared Sprint'; // Пример имени для запроса
 
 // Пример использования функции
 const entitys = parse('entitys.csv');
@@ -92,6 +73,12 @@ let remove = 0; // Снято
 let backlog = 0; // Бэклог
 let backlog1 = 0; // Бэклог1
 let backlog2 = 0; // Бэклог2
+let block = 0; // Заблокировано задач в Ч/Д
+
+let exclude = [];
+let excludeCount = [];
+let adde = [];
+let addeCount = [];
 
 console.log("Start: " + sqlSprintStartDate); // Дата и Время начала спринта
 console.log("End: " + sqlSprintEndDate); // Дата и Время окончания спринта
@@ -99,8 +86,23 @@ console.log("Start2: " + sqlSprintStartDate2); // Дата и Время нач�
 
 const item = sqlEntityIdsForSprintName[0]?.entity_ids;
 
+let currentDate = new Date(sqlSprintStartDate);
+let endDate = new Date(sqlSprintEndDate);
+
+while (currentDate <= endDate){
+    exclude.push(0);
+    excludeCount.push(0);
+    adde.push(0);
+    addeCount.push(0);
+
+    currentDate.setDate(currentDate.getDate() + 1);
+}
+
 let update = false;
 for (let i = 0; i < sqlEntityIdsForSprintName[0]?.entity_ids.length; i++){
+
+
+
     update = false;
 
     const sqlExecuted = alasql(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND status = 'Создано'`, [entitys]);
@@ -108,12 +110,14 @@ for (let i = 0; i < sqlEntityIdsForSprintName[0]?.entity_ids.length; i++){
     const sqlRemove = alasql(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND ((status = 'Закрыто' OR status = 'Выполнено') AND (resolution = 'Отклонено' OR resolution = 'Отменено инициатором' OR resolution = 'Дубликат') OR (status = 'Отклонен исполнителем' AND type = 'Дефект'))`, [entitys]);
     const sqlBacklog = alasql(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND type != 'Дефект' AND update_date < '${sqlSprintStartDate2}'`, [entitys]);
     const sqlBacklog2 = alasql(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND type != 'Дефект' AND update_date > '${sqlSprintStartDate}' AND update_date < '${sqlSprintStartDate2}'`, [entitys]);
+    const sqlParentTicketId = alasql(`SELECT parent_ticket_id FROM ? WHERE entity_id = '${item[i]}' AND type = 'Закрыто' AND resolution = 'Готово'`, [entitys]);
+
 
     if (!isNaN(Number(sqlExecuted[0]?.estimation))){
         executed += Number(sqlExecuted[0]?.estimation);
         update = true;
     }
-    
+
     if (!isNaN(Number(sqlDone[0]?.estimation))){
         done += Number(sqlDone[0]?.estimation);
         update = true;
@@ -138,6 +142,11 @@ for (let i = 0; i < sqlEntityIdsForSprintName[0]?.entity_ids.length; i++){
     if (!isNaN(Number(sqlBacklog2[0]?.estimation))){
         backlog2 += Number(sqlBacklog2[0]?.estimation);
     }
+
+    if (!isNaN(Number(sqlParentTicketId[0]?.parent_ticket_id))){
+        const sqlBlock = alasql(`SELECT estimation FROM ? WHERE entity_id = '${item[i]}' AND type = 'Закрыто' AND resolution = 'Готово'`, [entitys]);
+        block += Number(sqlParentTicketId[0]?.parent_ticket_id);
+    }
 }
 
 executed = executed / 3600;
@@ -161,6 +170,9 @@ backlog2 = backlog2 / 3600;
 backlog = backlog2 / backlog1 * 100;
 backlog = Math.round(backlog * 10) / 10;
 
+block = block / 3600;
+block = Math.round(backlog * 10) / 10;
+
 console.log("К выполнению: " + executed); // Вывод значения показателя "К выполнению"
 console.log("В работе: " + work); // Вывод значения показателя "В работе"
 console.log("Сделано: " + done); // Вывод значения показателя "Сделано"
@@ -168,6 +180,11 @@ console.log("Снято: " + remove); // Вывод значения показ�
 console.log("Бэклог: " + backlog) // Вывод значения "Бэклог"
 console.log("Бэклог1: " + backlog1); // Вывод "значения" "бэклог"
 console.log("Бэклог2: " + backlog2); // Вывод "значения" "бэклог2"
+console.log("Заблокировано задач в Ч/Д: " + block); // Вывод значения Заблокировано задач в Ч/Д
+
+for (let it = 0; it < adde.length; it++){
+    console.log("Значение: " + adde[it]);
+}
 
 //let sql_entity = alasql('SELECT * FROM ? LIMIT 10', [history]);
 //let sql_sprint = alasql(`SELECT * FROM ? WHERE sprint_start_date = 2024-07-03-19:00:00.000000`, [sprints]);
