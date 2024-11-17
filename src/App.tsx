@@ -20,9 +20,9 @@ function App() {
     "sprint 3",
   ])
   const [paths, setPaths] = useState<Paths>( {
-    sprints: "",
-    entities: "",
-    history: ""
+    sprints: null,
+    entities: null,
+    history: null
   })
   const [statuses, setStatuses] = useState<NameValue[]>([{
     name: "В работе",
