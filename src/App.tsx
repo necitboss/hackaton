@@ -47,8 +47,7 @@ const readFileAsText = (file: File): Promise<string> => {
 };
 
 async function parse_file(file: File): Promise<any> {
-  const reader = new FileReader();
-  const data = readFileAsText(file);
+  const data = await readFileAsText(file);
 
   const result = Papa.parse(data, {
     header: true,
@@ -360,11 +359,17 @@ function App() {
   const handleRunClick = async (paths: Paths) => {
     setRun((prevState: boolean) => !prevState);
 
-    setEntities(await parse_file(paths.entities));
-    setSprints(await parse_file(paths.sprints));
-    setHistory(await parse_file(paths.history));
+    const entities = await parse_file(paths.entities);
+    const sprints = await parse_file(paths.sprints);
+    const history = await parse_file(paths.history);
+    setEntities(entities);
+    setSprints(sprints);
+    setHistory(history);
 
-    setNames(alasql(`SELECT sprint_name FROM ?`, [sprints]));
+    const names = alasql(`SELECT sprint_name FROM ?`, [sprints]).map(
+      (name: any) => name.sprint_name,
+    );
+    setNames(names);
 
     const result = parse_sprint(names[0], entities, sprints, history);
 
